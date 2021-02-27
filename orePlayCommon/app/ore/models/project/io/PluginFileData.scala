@@ -224,6 +224,9 @@ sealed abstract class NukkitInfoHandler(fileName: String) extends FileTypeHandle
       state.addOne(StringListValue(key, transformed))
     }
   }
+
+  def addStringListDataValue(key: String, value : Seq[String], state : ArrayBuffer[DataValue])
+    = addStringListDataValue[String](key, value, x => identity(x), state)
 }
 
 object NukkitYmlInfoHandler extends NukkitInfoHandler("nukkit.yml")
