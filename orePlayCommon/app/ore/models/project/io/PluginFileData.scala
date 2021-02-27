@@ -189,8 +189,7 @@ sealed abstract class NukkitInfoHandler(fileName: String) extends FileTypeHandle
       if (dependencies.nonEmpty || softDependencies.nonEmpty)
         dataValues += DependencyDataValue("dependencies", (dependencies++softDependencies).toList)
       
-      if (info.getCompatibleAPIs != null)
-        dataValues += StringListValue("nukkitApis", info.getAuthors.asScala.toSeq)
+      addStringListDataValue("nukkitApis", info.getCompatibleAPIs.asScala.toSeq, dataValues)
       
       dataValues.toSeq
     } catch {
