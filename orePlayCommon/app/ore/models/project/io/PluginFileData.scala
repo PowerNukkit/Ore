@@ -165,21 +165,36 @@ sealed abstract class NukkitInfoHandler(fileName: String) extends FileTypeHandle
         dataValues += StringListValue("authors", info.getAuthors.asScala.toSeq)
 
       var dependencies: Seq[Dependency] = Seq()
+      var softDependencies : Seq[Dependency] = Seq()
+
       if (info.getDepend != null) {
         dependencies = info.getDepend.asScala.map(p => Dependency(p.toLowerCase(), None, required = true)).toSeq
       }
 
       if (info.getSoftDepend != null) {
-        val requiredIds = dependencies.map(_.pluginId)
-        val softDeps = info.getDepend.asScala
-          .map(p => p.toLowerCase()).filterNot(requiredIds.contains(_))
-          .map(Dependency(_, None, required = false))
-          .toSeq
-        dependencies ++= softDeps
+        softDependencies = info.getSoftDepend.asScala.map(p => Dependency(p.toLowerCase(), None, required = false)).toSeq
+      }
+
+      if(dependencies.nonEmpty && softDependencies.nonEmpty) {
+        val softId = softDependencies.map(_.pluginId)
+        val depId = dependencies.map(_.pluginId)
+
+        val depsInSoft = depId.intersect(softId)
+        val softsInDep = softId.intersect(depId)
+
+        if(depsInSoft.nonEmpty && softsInDep.nonEmpty)
+          throw new Exception(s"Duplicate dependency error. depends found in softDepends : ${depsInSoft.mkString(",")}\n" +
+                      s"Duplicate dependency error. softDepends found in depends : ${softsInDep.mkString(",")}")
+
+        if(depsInSoft.nonEmpty)
+          throw new Exception(s"Duplicate dependency error. depends found in softDepends : ${depsInSoft.mkString(",")}")
+
+        if(softsInDep.nonEmpty)
+          throw new Exception(s"Duplicate dependency error. softDepends found in depends : ${softsInDep.mkString(",")}")
       }
       
-      if (dependencies.nonEmpty)
-        dataValues += DependencyDataValue("dependencies", dependencies.toList)
+      if (dependencies.nonEmpty || softDependencies.nonEmpty)
+        dataValues += DependencyDataValue("dependencies", (dependencies++softDependencies).toList)
       
       if (info.getCompatibleAPIs != null)
         dataValues += StringListValue("nukkitApis", info.getAuthors.asScala.toSeq)
