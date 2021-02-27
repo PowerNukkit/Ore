@@ -147,22 +147,15 @@ sealed abstract class NukkitInfoHandler(fileName: String) extends FileTypeHandle
     try {
       val content = LazyList.continually(bufferedReader.readLine()).takeWhile(_ != null).mkString("\n")
       val info = new PluginDescription(content)
-      if (info.getName != null) {
-        dataValues += StringDataValue("name", info.getName)
-        dataValues += StringDataValue("id", info.getName.toLowerCase)
-      }
 
-      if (info.getVersion != null)
-        dataValues += StringDataValue("version", info.getVersion)
-        
-      if (info.getDescription != null) 
-        dataValues += StringDataValue("description", info.getDescription)
-        
-      if (info.getWebsite != null)
-        dataValues += StringDataValue("url", info.getWebsite)
-        
-      if (info.getAuthors != null)
-        dataValues += StringListValue("authors", info.getAuthors.asScala.toSeq)
+      addStringDataValue("name", info.getName, dataValues)
+      addStringDataValue[String]("id", info.getName, x => x.toLowerCase(), dataValues)
+
+      addStringDataValue("version",info.getVersion,dataValues)
+      addStringDataValue("description", info.getDescription, dataValues)
+      addStringDataValue("url", info.getWebsite, dataValues)
+
+      addStringListDataValue("authors", info.getAuthors.asScala.toSeq, dataValues)
 
       var dependencies: Seq[Dependency] = Seq()
       var softDependencies : Seq[Dependency] = Seq()
