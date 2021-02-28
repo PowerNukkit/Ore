@@ -160,11 +160,11 @@ sealed abstract class NukkitInfoHandler(fileName: String) extends FileTypeHandle
       var dependencies: Seq[Dependency] = Seq()
       var softDependencies : Seq[Dependency] = Seq()
 
-      if (info.getDepend != null) {
+      if (toOption(info.getDepend).isDefined) {
         dependencies = info.getDepend.asScala.map(p => Dependency(p.toLowerCase(), None, required = true)).toSeq
       }
 
-      if (info.getSoftDepend != null) {
+      if (toOption(info.getSoftDepend).isDefined) {
         softDependencies = info.getSoftDepend.asScala.map(p => Dependency(p.toLowerCase(), None, required = false)).toSeq
       }
 
@@ -201,7 +201,7 @@ sealed abstract class NukkitInfoHandler(fileName: String) extends FileTypeHandle
 
   // Haskell Syntax : addStringDataValue :: String -> T -> (T -> String) -> [DataValue] -> ()
   def addStringDataValue[T](key : String, value : T, transform : T => String, state : ArrayBuffer[DataValue]): Unit = {
-    if(value != null){
+    if(toOption(value).isDefined){
         state.addOne(StringDataValue(key, transform(value)))
     }
   }
