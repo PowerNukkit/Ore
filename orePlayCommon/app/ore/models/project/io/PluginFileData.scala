@@ -211,7 +211,7 @@ sealed abstract class NukkitInfoHandler(fileName: String) extends FileTypeHandle
 
   // Haskell Syntax : addStringListDataValue :: String -> [T] -> (T -> String) -> [DataValue] -> ()
   def addStringListDataValue[T](key : String, value : Seq[T], transform : T => String, state : ArrayBuffer[DataValue]) : Unit = {
-    if(value != null){
+    if(value.nonEmpty){
       val transformed = value.map(transform)
       state.addOne(StringListValue(key, transformed))
     }
