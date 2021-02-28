@@ -219,6 +219,13 @@ sealed abstract class NukkitInfoHandler(fileName: String) extends FileTypeHandle
 
   def addStringListDataValue(key: String, value : Seq[String], state : ArrayBuffer[DataValue])
     = addStringListDataValue[String](key, value, x => identity(x), state)
+
+  def toOption[T](unsafeValue : T) : Option[T] = {
+    unsafeValue match {
+      case null => None
+      case _ => Some(unsafeValue)
+    }
+  }
 }
 
 object NukkitYmlInfoHandler extends NukkitInfoHandler("nukkit.yml")
